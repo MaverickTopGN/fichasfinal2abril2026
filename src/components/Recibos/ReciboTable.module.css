@@ -1,0 +1,243 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.03em;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.uploadBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-black);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.uploadBtn:hover { opacity: 0.85; }
+
+.filters {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.filterSelect {
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--color-text);
+  background: white;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.filterSelect:focus {
+  border-color: var(--color-yellow);
+}
+
+.tableWrap {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.skeletonRows {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.skeletonRow {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.th {
+  padding: 0.875rem 1rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #fafafa;
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.th:hover { color: var(--color-text); }
+
+.sortIcon {
+  font-size: 0.9rem;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+
+.row {
+  transition: background 0.1s;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.row:last-child { border-bottom: none; }
+.row:hover { background: #fafafa; }
+
+.td {
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+  color: var(--color-text);
+}
+
+.mono {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.notes {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-muted);
+}
+
+.empty { color: #d1d5db; }
+
+.badge {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.badgeNT {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.badgeJOSUE {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badgeLS {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.pdfBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #fee2e2;
+  color: #ef4444;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  transition: background 0.15s;
+  text-decoration: none;
+}
+
+.pdfBtn:hover { background: #fecaca; }
+
+.deleteBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  transition: background 0.15s, color 0.15s;
+}
+
+.deleteBtn:hover:not(:disabled) {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.deleteBtn:disabled { opacity: 0.4; }
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.pageBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--color-border);
+  background: white;
+  border-radius: var(--radius-sm);
+  font-size: 1.1rem;
+  color: var(--color-text);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.pageBtn:hover:not(:disabled) {
+  border-color: var(--color-yellow);
+  background: var(--color-yellow-light);
+}
+
+.pageBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pageInfo {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}

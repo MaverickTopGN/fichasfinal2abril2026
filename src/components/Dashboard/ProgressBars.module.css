@@ -1,0 +1,61 @@
+.card {
+  background: var(--color-card);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 2px;
+}
+
+.subtitle {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1.25rem;
+}
+
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.barItem {}
+
+.barHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.barLabel {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.barValue {
+  font-size: 0.8rem;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.barTrack {
+  height: 8px;
+  background: #f3f4f6;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background: var(--color-yellow);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  min-width: 2px;
+}
