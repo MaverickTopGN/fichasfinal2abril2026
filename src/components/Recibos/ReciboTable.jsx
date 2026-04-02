@@ -5,8 +5,9 @@ import toast from 'react-hot-toast'
 import { getRecibos, deleteRecibo, updateRecibo, getTotalFiltered, getPdfUrl } from '../../api/recibos'
 import EmptyState from './EmptyState'
 import UploadModal from './UploadModal'
+import BulkUploadModal from './BulkUploadModal'
 import Skeleton from '../common/Skeleton'
-import { MdPictureAsPdf, MdDelete, MdEdit, MdDownload, MdArrowUpward, MdArrowDownward, MdAdd, MdChevronLeft, MdChevronRight } from 'react-icons/md'
+import { MdPictureAsPdf, MdDelete, MdEdit, MdDownload, MdArrowUpward, MdArrowDownward, MdAdd, MdChevronLeft, MdChevronRight, MdLibraryAdd } from 'react-icons/md'
 import styles from './ReciboTable.module.css'
 
 const fmt = (v) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(v)
@@ -18,6 +19,7 @@ export default function ReciboTable() {
   const [count, setCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
+  const [bulkOpen, setBulkOpen] = useState(false)
   const [page, setPage] = useState(1)
   const [filters, setFilters] = useState({ mes: '', operador: 'TODOS' })
   const [sortKey, setSortKey] = useState('fecha')
@@ -134,10 +136,16 @@ export default function ReciboTable() {
           <h1 className={styles.title}>Actividad</h1>
           <p className={styles.subtitle}>{count} recibo{count !== 1 ? 's' : ''} encontrado{count !== 1 ? 's' : ''}</p>
         </div>
-        <button className={styles.uploadBtn} onClick={() => setModalOpen(true)}>
-          <MdAdd />
-          <span>Nuevo Recibo</span>
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button className={styles.uploadBtnSecondary} onClick={() => setBulkOpen(true)}>
+            <MdLibraryAdd />
+            <span>Carga Masiva</span>
+          </button>
+          <button className={styles.uploadBtn} onClick={() => setModalOpen(true)}>
+            <MdAdd />
+            <span>Nuevo Recibo</span>
+          </button>
+        </div>
       </div>
 
       <div className={styles.filters}>
@@ -368,6 +376,13 @@ export default function ReciboTable() {
         <UploadModal
           onClose={() => setModalOpen(false)}
           onSuccess={() => { setModalOpen(false); load() }}
+        />
+      )}
+
+      {bulkOpen && (
+        <BulkUploadModal
+          onClose={() => setBulkOpen(false)}
+          onSuccess={() => { setBulkOpen(false); load() }}
         />
       )}
     </div>
