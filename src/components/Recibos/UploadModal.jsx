@@ -3,12 +3,40 @@ import { useDropzone } from 'react-dropzone'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 import { uploadRecibo } from '../../api/recibos'
-import { MdClose, MdUploadFile, MdPictureAsPdf, MdImage } from 'react-icons/md'
+import { MdClose, MdUploadFile, MdPictureAsPdf, MdImage, MdAutoAwesome } from 'react-icons/md'
 import styles from './UploadModal.module.css'
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+async function extractAmountFromImage(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.onload = async (e) => {
+      try {
+        const base64 = e.target.result.split(',')[1]
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/extract-amount`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({ imageBase64: base64, mimeType: file.type }),
+        })
+        const data = await res.json()
+        resolve(data.monto ?? null)
+      } catch {
+        resolve(null)
+      }
+    }
+    reader.readAsDataURL(file)
+  })
+}
 
 export default function UploadModal({ onClose, onSuccess }) {
   const [file, setFile] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [extracting, setExtracting] = useState(false)
   const [form, setForm] = useState({
     monto: '',
     operador: 'NT',
@@ -16,8 +44,20 @@ export default function UploadModal({ onClose, onSuccess }) {
     notas: '',
   })
 
-  const onDrop = useCallback((accepted) => {
-    if (accepted.length > 0) setFile(accepted[0])
+  const onDrop = useCallback(async (accepted) => {
+    if (accepted.length === 0) return
+    const f = accepted[0]
+    setFile(f)
+
+    if (f.type.startsWith('image/')) {
+      setExtracting(true)
+      const monto = await extractAmountFromImage(f)
+      setExtracting(false)
+      if (monto !== null) {
+        setForm((prev) => ({ ...prev, monto: monto.toFixed(2) }))
+        toast.success(`Monto detectado: $${monto.toFixed(2)}`, { icon: '🤖' })
+      }
+    }
   }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -101,7 +141,14 @@ export default function UploadModal({ onClose, onSuccess }) {
 
           <div className={styles.fields}>
             <div className={styles.field}>
-              <label className={styles.label}>Monto (MXN)</label>
+              <label className={styles.label}>
+                Monto (MXN)
+                {extracting && (
+                  <span style={{ marginLeft: 8, fontSize: 12, color: '#9CA3AF', fontWeight: 400 }}>
+                    🤖 Leyendo recibo...
+                  </span>
+                )}
+              </label>
               <div className={styles.inputPrefix}>
                 <span>$</span>
                 <input
@@ -109,12 +156,14 @@ export default function UploadModal({ onClose, onSuccess }) {
                   name="monto"
                   value={form.monto}
                   onChange={handleChange}
-                  placeholder="0.00"
+                  placeholder={extracting ? 'Detectando...' : '0.00'}
                   step="0.01"
                   min="0"
                   className={styles.input}
+                  disabled={extracting}
                   required
                 />
+                {extracting && <span className={styles.spinner} style={{ marginLeft: 8 }} />}
               </div>
             </div>
 
