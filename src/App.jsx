@@ -26,21 +26,8 @@ export default function App() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="actividad" element={<ReciboTable />} />
-          <Route path="herramientas" element={<PlaceholderPage title="Herramientas" />} />
-          <Route path="analiticas" element={<PlaceholderPage title="Analíticas" />} />
-          <Route path="ayuda" element={<PlaceholderPage title="Ayuda" />} />
-          <Route path="chat" element={<PlaceholderPage title="Chat" />} />
         </Route>
       </Routes>
     </BrowserRouter>
-  )
-}
-
-function PlaceholderPage({ title }) {
-  return (
-    <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-      <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{title}</h2>
-      <p>Próximamente disponible</p>
-    </div>
   )
 }

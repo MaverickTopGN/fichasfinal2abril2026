@@ -8,7 +8,7 @@ export async function uploadRecibo(file, data) {
 
   const { error: uploadError } = await supabase.storage
     .from('recibos-pdf')
-    .upload(path, file, { contentType: 'application/pdf' })
+    .upload(path, file, { contentType: file.type || 'application/octet-stream' })
 
   if (uploadError) throw uploadError
 
@@ -66,6 +66,39 @@ export async function getReciboById(id) {
     .single()
   if (error) throw error
   return data
+}
+
+export async function getTotalFiltered({ mes, operador } = {}) {
+  let query = supabase.from('recibos').select('monto')
+
+  if (mes) {
+    const [year, month] = mes.split('-')
+    const start = `${year}-${month}-01`
+    const end = format(endOfMonth(new Date(year, parseInt(month) - 1, 1)), 'yyyy-MM-dd')
+    query = query.gte('fecha', start).lte('fecha', end)
+  }
+
+  if (operador && operador !== 'TODOS') {
+    query = query.eq('operador', operador)
+  }
+
+  const { data, error } = await query
+  if (error) throw error
+  const total = (data || []).reduce((acc, r) => acc + parseFloat(r.monto), 0)
+  return { total, count: (data || []).length }
+}
+
+export async function updateRecibo(id, data) {
+  const { error } = await supabase
+    .from('recibos')
+    .update({
+      monto: data.monto,
+      operador: data.operador,
+      fecha: data.fecha,
+      notas: data.notas,
+    })
+    .eq('id', id)
+  if (error) throw error
 }
 
 export async function deleteRecibo(id) {

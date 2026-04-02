@@ -15,10 +15,6 @@ import styles from './Sidebar.module.css'
 const navItems = [
   { to: '/dashboard', icon: MdDashboard, label: 'Dashboard' },
   { to: '/actividad', icon: MdAccessTime, label: 'Actividad' },
-  { to: '/herramientas', icon: MdBuild, label: 'Herramientas' },
-  { to: '/analiticas', icon: MdBarChart, label: 'Analíticas' },
-  { to: '/ayuda', icon: MdHelp, label: 'Ayuda' },
-  { to: '/chat', icon: MdChat, label: 'Chat' },
 ]
 
 export default function Sidebar({ isOpen, onClose }) {

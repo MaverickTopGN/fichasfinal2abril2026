@@ -183,6 +183,29 @@
 
 .pdfBtn:hover { background: #fecaca; }
 
+.fileActions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.downloadBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #dbeafe;
+  color: #2563eb;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.downloadBtn:hover { background: #bfdbfe; }
+
 .deleteBtn {
   display: inline-flex;
   align-items: center;
@@ -237,7 +260,192 @@
   cursor: not-allowed;
 }
 
+.totalRow {
+  background: #fefce8;
+  border-top: 2px solid #FFD700;
+}
+
+.totalRow td {
+  padding: 1rem;
+}
+
+.totalAmount {
+  font-size: 1.1rem;
+  color: var(--color-black);
+}
+
+.totalCount {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
 .pageInfo {
   font-size: 0.875rem;
   color: var(--color-text-muted);
+}
+
+/* Actions row */
+.actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+/* Edit button */
+.editBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.editBtn:hover {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+/* Edit Modal */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.editModal {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 440px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.editTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--color-text);
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.editField label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.editField input,
+.editField select,
+.editField textarea {
+  width: 100%;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  background: white;
+  outline: none;
+  transition: border-color 0.15s;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.editField input:focus,
+.editField select:focus,
+.editField textarea:focus {
+  border-color: var(--color-yellow);
+}
+
+.editInputPrefix {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.editInputPrefix:focus-within {
+  border-color: var(--color-yellow);
+}
+
+.editInputPrefix span {
+  padding: 0.6rem 0.75rem;
+  background: #f9fafb;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-right: 1.5px solid var(--color-border);
+}
+
+.editInputPrefix input {
+  border: none;
+  border-radius: 0;
+  flex: 1;
+}
+
+.editInputPrefix input:focus {
+  border: none;
+}
+
+.editActions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.editActions button {
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid var(--color-border);
+  background: white;
+  color: var(--color-text);
+  transition: all 0.15s;
+}
+
+.editActions button:hover {
+  background: #f3f4f6;
+}
+
+.editSaveBtn {
+  background: var(--color-yellow) !important;
+  border-color: var(--color-yellow) !important;
+  color: var(--color-black) !important;
+}
+
+.editSaveBtn:hover {
+  opacity: 0.9;
+  background: var(--color-yellow) !important;
 }

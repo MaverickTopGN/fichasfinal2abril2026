@@ -3,7 +3,7 @@ import { useDropzone } from 'react-dropzone'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 import { uploadRecibo } from '../../api/recibos'
-import { MdClose, MdUploadFile, MdPictureAsPdf } from 'react-icons/md'
+import { MdClose, MdUploadFile, MdPictureAsPdf, MdImage } from 'react-icons/md'
 import styles from './UploadModal.module.css'
 
 export default function UploadModal({ onClose, onSuccess }) {
@@ -22,9 +22,14 @@ export default function UploadModal({ onClose, onSuccess }) {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 'application/pdf': ['.pdf'] },
+    accept: {
+      'application/pdf': ['.pdf'],
+      'image/*': ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.heif', '.bmp', '.tiff'],
+    },
     maxFiles: 1,
   })
+
+  const isImage = file && file.type.startsWith('image/')
 
   const handleChange = (e) => {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
@@ -32,7 +37,7 @@ export default function UploadModal({ onClose, onSuccess }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!file) { toast.error('Selecciona un archivo PDF'); return }
+    if (!file) { toast.error('Selecciona un archivo'); return }
     if (!form.monto || parseFloat(form.monto) <= 0) { toast.error('Ingresa un monto válido'); return }
 
     setLoading(true)
@@ -66,7 +71,11 @@ export default function UploadModal({ onClose, onSuccess }) {
             <input {...getInputProps()} />
             {file ? (
               <div className={styles.fileInfo}>
-                <MdPictureAsPdf className={styles.pdfIcon} />
+                {isImage ? (
+                  <MdImage className={styles.pdfIcon} style={{ color: '#4CAF50' }} />
+                ) : (
+                  <MdPictureAsPdf className={styles.pdfIcon} />
+                )}
                 <div>
                   <p className={styles.fileName}>{file.name}</p>
                   <p className={styles.fileSize}>{(file.size / 1024).toFixed(1)} KB</p>
@@ -83,9 +92,9 @@ export default function UploadModal({ onClose, onSuccess }) {
               <div className={styles.dropContent}>
                 <MdUploadFile className={styles.uploadIcon} />
                 <p className={styles.dropText}>
-                  {isDragActive ? 'Suelta el PDF aquí' : 'Arrastra un PDF o haz clic para seleccionar'}
+                  {isDragActive ? 'Suelta el archivo aquí' : 'Arrastra un PDF o imagen, o haz clic para seleccionar'}
                 </p>
-                <p className={styles.dropHint}>Solo archivos .pdf</p>
+                <p className={styles.dropHint}>PDF, JPG, PNG, WEBP y más</p>
               </div>
             )}
           </div>

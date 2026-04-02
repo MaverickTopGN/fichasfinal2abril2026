@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import toast from 'react-hot-toast'
-import { getRecibos, deleteRecibo, getPdfUrl } from '../../api/recibos'
+import { getRecibos, deleteRecibo, updateRecibo, getTotalFiltered, getPdfUrl } from '../../api/recibos'
 import EmptyState from './EmptyState'
 import UploadModal from './UploadModal'
 import Skeleton from '../common/Skeleton'
-import { MdPictureAsPdf, MdDelete, MdArrowUpward, MdArrowDownward, MdAdd, MdChevronLeft, MdChevronRight } from 'react-icons/md'
+import { MdPictureAsPdf, MdDelete, MdEdit, MdDownload, MdArrowUpward, MdArrowDownward, MdAdd, MdChevronLeft, MdChevronRight } from 'react-icons/md'
 import styles from './ReciboTable.module.css'
 
 const fmt = (v) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(v)
@@ -23,6 +23,10 @@ export default function ReciboTable() {
   const [sortKey, setSortKey] = useState('fecha')
   const [sortDir, setSortDir] = useState('desc')
   const [deleting, setDeleting] = useState(null)
+  const [editing, setEditing] = useState(null)
+  const [editForm, setEditForm] = useState({ monto: '', operador: '', fecha: '', notas: '' })
+  const [saving, setSaving] = useState(false)
+  const [grandTotal, setGrandTotal] = useState({ total: 0, count: 0 })
 
   async function load() {
     setLoading(true)
@@ -30,6 +34,8 @@ export default function ReciboTable() {
       const { data, count: total } = await getRecibos({ ...filters, page, pageSize: PAGE_SIZE })
       setRecibos(data || [])
       setCount(total || 0)
+      const totals = await getTotalFiltered(filters)
+      setGrandTotal(totals)
     } catch (err) {
       toast.error('Error al cargar recibos')
     } finally {
@@ -69,6 +75,37 @@ export default function ReciboTable() {
       toast.error('Error al eliminar')
     } finally {
       setDeleting(null)
+    }
+  }
+
+  function handleEditOpen(recibo) {
+    setEditing(recibo)
+    setEditForm({
+      monto: recibo.monto,
+      operador: recibo.operador,
+      fecha: recibo.fecha,
+      notas: recibo.notas || '',
+    })
+  }
+
+  async function handleEditSave(e) {
+    e.preventDefault()
+    if (!editForm.monto || parseFloat(editForm.monto) <= 0) { toast.error('Monto inválido'); return }
+    setSaving(true)
+    try {
+      await updateRecibo(editing.id, {
+        monto: parseFloat(editForm.monto),
+        operador: editForm.operador,
+        fecha: editForm.fecha,
+        notas: editForm.notas || null,
+      })
+      toast.success('Recibo actualizado')
+      setEditing(null)
+      load()
+    } catch (err) {
+      toast.error('Error al actualizar')
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -143,6 +180,19 @@ export default function ReciboTable() {
           <EmptyState onUpload={() => setModalOpen(true)} />
         ) : (
           <table className={styles.table}>
+            <tfoot>
+              <tr className={styles.totalRow}>
+                <td className={styles.td} colSpan={2}>
+                  <strong>Total {filters.mes ? monthOptions.find(m => m.value === filters.mes)?.label : 'general'}{filters.operador !== 'TODOS' ? ` — ${filters.operador}` : ''}</strong>
+                </td>
+                <td className={`${styles.td} ${styles.mono}`}>
+                  <strong className={styles.totalAmount}>{fmt(grandTotal.total)}</strong>
+                </td>
+                <td className={styles.td} colSpan={3}>
+                  <span className={styles.totalCount}>{grandTotal.count} recibo{grandTotal.count !== 1 ? 's' : ''}</span>
+                </td>
+              </tr>
+            </tfoot>
             <thead>
               <tr>
                 <th className={styles.th} onClick={() => handleSort('fecha')}>
@@ -177,25 +227,54 @@ export default function ReciboTable() {
                     {r.notas || <span className={styles.empty}>—</span>}
                   </td>
                   <td className={styles.td}>
-                    <a
-                      href={getPdfUrl(r.ruta_archivo)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.pdfBtn}
-                      title={r.nombre_archivo}
-                    >
-                      <MdPictureAsPdf />
-                    </a>
+                    <div className={styles.fileActions}>
+                      <a
+                        href={getPdfUrl(r.ruta_archivo)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.pdfBtn}
+                        title="Ver archivo"
+                      >
+                        <MdPictureAsPdf />
+                      </a>
+                      <button
+                        className={styles.downloadBtn}
+                        title="Descargar"
+                        onClick={async () => {
+                          try {
+                            const url = getPdfUrl(r.ruta_archivo)
+                            const res = await fetch(url)
+                            const blob = await res.blob()
+                            const a = document.createElement('a')
+                            a.href = URL.createObjectURL(blob)
+                            a.download = r.nombre_archivo
+                            a.click()
+                            URL.revokeObjectURL(a.href)
+                          } catch { toast.error('Error al descargar') }
+                        }}
+                      >
+                        <MdDownload />
+                      </button>
+                    </div>
                   </td>
                   <td className={styles.td}>
-                    <button
-                      className={styles.deleteBtn}
-                      onClick={() => handleDelete(r)}
-                      disabled={deleting === r.id}
-                      title="Eliminar recibo"
-                    >
-                      <MdDelete />
-                    </button>
+                    <div className={styles.actions}>
+                      <button
+                        className={styles.editBtn}
+                        onClick={() => handleEditOpen(r)}
+                        title="Editar recibo"
+                      >
+                        <MdEdit />
+                      </button>
+                      <button
+                        className={styles.deleteBtn}
+                        onClick={() => handleDelete(r)}
+                        disabled={deleting === r.id}
+                        title="Eliminar recibo"
+                      >
+                        <MdDelete />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -223,6 +302,65 @@ export default function ReciboTable() {
           >
             <MdChevronRight />
           </button>
+        </div>
+      )}
+
+      {editing && (
+        <div className={styles.overlay} onClick={(e) => e.target === e.currentTarget && setEditing(null)}>
+          <div className={styles.editModal}>
+            <h2 className={styles.editTitle}>Editar Recibo</h2>
+            <form onSubmit={handleEditSave} className={styles.editForm}>
+              <div className={styles.editField}>
+                <label>Monto (MXN)</label>
+                <div className={styles.editInputPrefix}>
+                  <span>$</span>
+                  <input
+                    type="number"
+                    value={editForm.monto}
+                    onChange={(e) => setEditForm(f => ({ ...f, monto: e.target.value }))}
+                    step="0.01"
+                    min="0"
+                    required
+                  />
+                </div>
+              </div>
+              <div className={styles.editField}>
+                <label>Operador</label>
+                <select
+                  value={editForm.operador}
+                  onChange={(e) => setEditForm(f => ({ ...f, operador: e.target.value }))}
+                >
+                  <option value="NT">NT</option>
+                  <option value="JOSUE">JOSUE</option>
+                  <option value="LS">LS</option>
+                </select>
+              </div>
+              <div className={styles.editField}>
+                <label>Fecha</label>
+                <input
+                  type="date"
+                  value={editForm.fecha}
+                  onChange={(e) => setEditForm(f => ({ ...f, fecha: e.target.value }))}
+                  required
+                />
+              </div>
+              <div className={styles.editField}>
+                <label>Notas</label>
+                <textarea
+                  value={editForm.notas}
+                  onChange={(e) => setEditForm(f => ({ ...f, notas: e.target.value }))}
+                  rows={3}
+                  placeholder="Opcional..."
+                />
+              </div>
+              <div className={styles.editActions}>
+                <button type="button" onClick={() => setEditing(null)} disabled={saving}>Cancelar</button>
+                <button type="submit" className={styles.editSaveBtn} disabled={saving}>
+                  {saving ? 'Guardando...' : 'Guardar'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
